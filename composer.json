@@ -1,20 +1,22 @@
 {
   "name": "kevinditscheid/kd-tca-autosuggest",
   "description": "This extension provides an autosuggest TCA configuration.",
-  "keywords": ["typo3", "extension", "composer.json", "TCA"],
-  "homepage": "http://kevin-ditscheid.de",
+  "keywords": ["typo3", "extension", "TCA"],
+  "homepage": "https://github.com/bara0801/kd_tca_autosuggest",
+  "support":{
+	  "issues": "https://github.com/bara0801/kd_tca_autosuggest/issues"
+  },
   "authors": [
     {
       "name": "Kevin Ditscheid",
-      "email": "kevinditscheid@gmail.com"
+      "email": "kevinditscheid@gmail.com",
+	  "role": "Developer"
     }
   ],
-  "license": "GPL-2.0+",
+  "license": "GPL-3.0+",
   "type": "typo3-cms-extension",
   "require": {
-    "typo3/cms-core": ">=7.6.0 <9.0.0",
-    "typo3/cms-frontend": ">=7.6.0 <9.0.0",
-    "typo3/cms-scheduler": ">=7.6.0 <9.0.0"
+    "typo3/cms-core": ">=8.3.0 <9.0.0"
   },
   "replace": {
     "kd_tca_autosuggest": "self.version",
