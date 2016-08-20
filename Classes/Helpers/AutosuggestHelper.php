@@ -16,6 +16,7 @@
 namespace KevinDitscheid\KdTcaAutosuggest\Helpers;
 
 use KevinDitscheid\KdTcaAutosuggest\Renderer\AutosuggestRenderer;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 
 /**
  * Description of AutosuggestHelper
@@ -26,21 +27,25 @@ class AutosuggestHelper {
 	/**
 	 * Get the config for the autosuggest field
 	 *
-	 * @param string $fieldName
-	 * @param string $foreignTable
-	 * @param array $customSettingOverride
+	 * @param string $foreignTable The foreign table
+	 * @param string $mmTable The MM table, set to NULL if not needed
+	 * @param array $customSettingOverride A custom configuration
 	 *
 	 * @return array
 	 */
-	static public function getAutosuggestFieldTCAConfig($fieldName, $foreignTable, array $customSettingOverride = []){
-		return [
+	static public function getAutosuggestFieldTCAConfig($foreignTable, $mmTable = NULL, array $customSettingOverride = []){
+		$config = [
 			'type' => 'user',
 			'userFunc'=> AutosuggestRenderer::class . '->render',
-			'parameters' => [
-				'foreign_table' => $foreignTable,
-				'MM' => $MmTable,
-				''
+			'foreign_table' => $foreignTable,
+			'MM' => $mmTable,
+			'wizards' => [
+				'suggest'=> [
+					'type' => 'suggest'
+				]
 			]
 		];
+		ArrayUtility::mergeRecursiveWithOverrule($config, $customSettingOverride);
+		return $config;
 	}
 }
