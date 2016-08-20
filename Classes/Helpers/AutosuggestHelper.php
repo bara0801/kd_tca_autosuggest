@@ -32,7 +32,7 @@ class AutosuggestHelper {
 	 *
 	 * @return array
 	 */
-	public function getAutosuggestFieldTCAConfig($fieldName, $foreignTable, array $customSettingOverride = []){
+	static public function getAutosuggestFieldTCAConfig($fieldName, $foreignTable, array $customSettingOverride = []){
 		return [
 			'type' => 'user',
 			'userFunc'=> AutosuggestRenderer::class . '->render',
