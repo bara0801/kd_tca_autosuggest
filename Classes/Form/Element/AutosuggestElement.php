@@ -13,36 +13,40 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-namespace KevinDitscheid\KdTcaAutosuggest\Renderer;
+namespace KevinDitscheid\KdTcaAutosuggest\Form\Element;
 
-use TYPO3\CMS\Backend\Form\Element\UserElement;
+use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 
 /**
- * Description of AutosuggestRenderer
+ * Description of AutosuggestElement
  *
  * @author Kevin Ditscheid <ditscheid@engine-productions.de>
  */
-class AutosuggestRenderer {
+class AutosuggestElement extends AbstractFormElement{
 	/**
-	 * Render the autosuggest form field
+     * Main result array as defined in initializeResultArray() of AbstractNode
+     *
+     * @var array
+     */
+    protected $resultArray;
+	
+	/**
+	 * Render the autosuggest element
 	 *
-	 * @param array $config The field config
-	 * @param UserElement $userElement The user element renderer class
-	 *
-	 * @return string
+	 * @return array
 	 */
-	public function render(array $config, UserElement $userElement){
-		$row = $config['row'];
-		$fieldName = $config['field'];
-		$pageRenderer = $this->getPageRenderer();
-		$cssPath = GeneralUtility::getFileAbsFileName('EXT:kd_tca_autosuggest/Resources/Public/Stylesheets/selectize.css');
-		$webCssPath = \str_replace(PATH_site, '', $cssPath);
-		$pageRenderer->addCssFile('../' . $webCssPath);
-		$pageRenderer->loadRequireJsModule('TYPO3/CMS/KdTcaAutosuggest/Autosuggest');
+	public function render() {
+		$this->resultArray = $this->initializeResultArray();
+		$this->addRequireJsModule();
+		$this->addStylesheet();
+		$table = $this->data['tableName'];
+        $fieldName = $this->data['fieldName'];
+        $row = $this->data['databaseRow'];
+        $config = $this->data['parameterArray'];
+		
 		$opt = [
 			'<option value=""></option>'
 		];
@@ -61,15 +65,15 @@ class AutosuggestRenderer {
 			if($mmTable){
 				$resultHandle = $this->getDatabase()->exec_SELECT_mm_query(
 					'`' . $foreignTable . '`.`uid`, `' . $foreignTable . '`.`' . $tableConfig['label'] . '` AS "label"', 
-					'`' . $config['table'] . '`', 
+					'`' . $table . '`', 
 					'`' . $mmTable . '`', 
 					'`' . $foreignTable . '`',
 					' AND `' . $foreignTable . '`.`uid` IN(' . implode(',',$selectedUids) . ')'
 				);
 				if($resultHandle){
 					$optionRows = [];
-					while($row = $this->getDatabase()->sql_fetch_assoc($resultHandle)){
-						$optionRows[] = $row;
+					while($optionRow = $this->getDatabase()->sql_fetch_assoc($resultHandle)){
+						$optionRows[] = $optionRow;
 					}
 				}
 			}else{
@@ -104,7 +108,7 @@ class AutosuggestRenderer {
 		$output = '<select '
                 . 'id="' . $config['itemFormElID'] . '" '
                 . 'data-formengine-input-name="' . htmlspecialchars($name) . '" '
-				. 'data-table="' . htmlspecialchars($config['table']) . '" '
+				. 'data-table="' . htmlspecialchars($table) . '" '
 				. 'data-field="' . htmlspecialchars($fieldName) . '" '
 				. 'data-uid="' . htmlspecialchars($row['uid']) . '" '
 				. 'data-pid="' . (int)$row['pid'] . '" '
@@ -116,16 +120,28 @@ class AutosuggestRenderer {
 		$output .= implode(LF, $opt);
 		$output .= '</select>';
 		$output .= '<input type="hidden" value="' . implode(',', $selectedUids) . '" name="' . $name . '" />';
-		return $output;
+		$this->resultArray['html'] = $output;
+		return $this->resultArray;
 	}
 	
 	/**
-	 * Get the PageRenderer
+	 * Add the require JS module to the resultArray
 	 *
-	 * @return PageRenderer
+	 * @return void
 	 */
-	protected function getPageRenderer(){
-		return GeneralUtility::makeInstance(PageRenderer::class);
+	protected function addRequireJsModule(){
+		$this->resultArray['requireJsModules'][] = 'TYPO3/CMS/KdTcaAutosuggest/Autosuggest';
+	}
+	
+	/**
+	 * Add the stylesheet to the resultArray
+	 *
+	 * @return void
+	 */
+	protected function addStylesheet(){
+		$cssPath = GeneralUtility::getFileAbsFileName('EXT:kd_tca_autosuggest/Resources/Public/Stylesheets/selectize.css');
+		$webCssPath = '../' . str_replace(PATH_site, '', $cssPath);
+		$this->resultArray['stylesheetFiles'][] = $webCssPath;
 	}
 	
 	/**

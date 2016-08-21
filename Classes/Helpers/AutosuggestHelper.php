@@ -35,8 +35,8 @@ class AutosuggestHelper {
 	 */
 	static public function getAutosuggestFieldTCAConfig($foreignTable, $mmTable = NULL, array $customSettingOverride = []){
 		$config = [
-			'type' => 'user',
-			'userFunc'=> AutosuggestRenderer::class . '->render',
+			'type' => 'select',
+			'renderType' => 'autosuggest',
 			'foreign_table' => $foreignTable,
 			'MM' => $mmTable,
 			'wizards' => [
