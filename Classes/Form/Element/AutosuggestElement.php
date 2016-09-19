@@ -56,7 +56,6 @@ class AutosuggestElement extends AbstractFormElement {
 				'<option value=""></option>'
 		];
 		$foreignTable = $config['fieldConf']['config']['foreign_table'];
-		$mmTable = $config['fieldConf']['config']['MM'];
 		$tableConfig = $this->getTcaTableCtrl($foreignTable);
 		$selectedUids = [ ];
 		if ( is_array($config['itemFormElValue']) ) {
@@ -67,26 +66,10 @@ class AutosuggestElement extends AbstractFormElement {
 			$selectedUids = [$config['itemFormElValue'] ];
 		}
 		if ( count($selectedUids) > 0 ) {
-			if ( $mmTable ) {
-				$resultHandle = $this->getDatabase()->exec_SELECTquery(
-					'`foreign_table`.`uid`, `foreign_table`.`' . $tableConfig['label'] . '` AS "label"',
-					'`' . $table . '` AS `local_table`,`' . $mmTable . '`,`' . $foreignTable . '` AS `foreign_table`',
-					'`local_table`.uid=`' . $mmTable . '`.uid_local AND ' .
-					'`foreign_table`.`uid`=`' . $mmTable . '`.`uid_foreign` AND ' .
-					'`local_table`.`uid` IN (' . (int) $row['uid'] . ')'
-				);
-				if ( $resultHandle ) {
-					$optionRows = [ ];
-					while ( $optionRow = $this->getDatabase()->sql_fetch_assoc($resultHandle) ) {
-						$optionRows[] = $optionRow;
-					}
-				}
-			} else {
-				$optionRows = $this->getDatabase()->exec_SELECTgetRows(
-					'`' . $foreignTable . '`.`uid`, `' . $foreignTable . '`.`' . $tableConfig['label'] . '` AS "label"', $foreignTable,
-					'`' . $foreignTable . '`.`uid` IN(' . implode(',', $selectedUids) . ')'
-				);
-			}
+			$optionRows = $this->getDatabase()->exec_SELECTgetRows(
+				'`' . $foreignTable . '`.`uid`, `' . $foreignTable . '`.`' . $tableConfig['label'] . '` AS "label"', $foreignTable,
+				'`' . $foreignTable . '`.`uid` IN(' . implode(',', $selectedUids) . ')'
+			);
 			if ( is_array($optionRows) ) {
 				$iconFactory = GeneralUtility::makeInstance(IconFactory::class);
 				foreach ( $optionRows as $selectedOption ) {
@@ -115,8 +98,9 @@ class AutosuggestElement extends AbstractFormElement {
 		) {
 			$multiple = 'multiple="multiple" ';
 		}
+
 		$output = '<input type="hidden" data-formengine-input-name="' . htmlspecialchars($name) . '" />'
-			. '<select ' . ($disabled ? 'disabled="disabled"' : '')
+			. '<select ' . ($disabled ? 'disabled="disabled" ' : '')
 			. 'id="' . $config['itemFormElID'] . '" '
 			. 'data-formengine-input-name="' . htmlspecialchars($name) . '" '
 			. 'data-table="' . htmlspecialchars($table) . '" '
