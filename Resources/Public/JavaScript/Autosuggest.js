@@ -1,13 +1,13 @@
 /*
  * This file is part of the TYPO3 CMS project.
- * 
+ *
  * It is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License, either version 2
  * of the License, or any later version.
- * 
+ *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
- * 
+ *
  * The TYPO3 project - inspiring people to share!
  */
 
@@ -26,6 +26,18 @@ define([
 				labelField: 'label',
 				valueField: 'uid',
 				sortField: 'label',
+				render: {
+					option: function(item, escape){
+						// entity decode
+						var sprite = $('<div />').html(item.sprite).text();
+						return '<div>' + sprite + item.label + '</div>';
+					},
+					item: function(item, escape){
+						// entity decode
+						var sprite = $('<div />').html(item.sprite).text();
+						return '<div>' + sprite + item.label + '</div>';
+					}
+				},
 				onChange: function(value){
 					var $hidden = this.$input.parent().find('input[name="' + this.$input.attr('name') + '"]');
 					if(typeof value === "object"){
@@ -33,6 +45,13 @@ define([
 					}else if(typeof value === "String"){
 						$hidden.val(value);
 					}
+				},
+				onItemAdd: function(value, $item){
+					var selectizeObject = this;
+					$item.on('click',function(event) {
+						event.preventDefault();
+						selectizeObject.$input.find('option[value="' + value + '"]').trigger('focus');
+					});
 				},
 				load: function (query, callback){
 					if (!query.length) return callback();
