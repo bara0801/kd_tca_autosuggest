@@ -40,7 +40,7 @@ define([
 				},
 				onChange: function(value){
 					var $hidden = this.$input.parent().find('input[name="' + this.$input.attr('name') + '"]');
-					if(typeof value === "object"){
+					if(value !== null && typeof value === "object"){
 						$hidden.val(value.join());
 					}else if(typeof value === "String"){
 						$hidden.val(value);
