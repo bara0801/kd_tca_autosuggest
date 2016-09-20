@@ -92,14 +92,16 @@ class AutosuggestElement extends AbstractFormElement {
 		}
 		$multiple = '';
 		$name = $config['itemFormElName'];
+		$selectName = $config['itemFormElName'];
 		if (
 			$config['fieldConf']['config']['MM'] ||
 			$config['fieldConf']['config']['maxitems'] > 1
 		) {
 			$multiple = 'multiple="multiple" ';
+			$selectName .= '[]';
 		}
 
-		$output = '<input type="hidden" data-formengine-input-name="' . htmlspecialchars($name) . '" />'
+		$output = '<input type="hidden" value="' . implode(',', $selectedUids) . '" name="' . $name . '" data-formengine-input-name="' . htmlspecialchars($name) . '" />'
 			. '<select ' . ($disabled ? 'disabled="disabled" ' : '')
 			. 'id="' . $config['itemFormElID'] . '" '
 			. 'data-formengine-input-name="' . htmlspecialchars($name) . '" '
@@ -109,12 +111,11 @@ class AutosuggestElement extends AbstractFormElement {
 			. 'data-pid="' . (int) $row['pid'] . '" '
 			. 'data-recorddata="' . htmlspecialchars($jsRow) . '" '
 			. 'class="selectize" '
-			. 'name="' . $name . '" '
+			. 'name="' . $selectName . '" '
 			. $multiple
 			. '>';
 		$output .= implode(LF, $opt);
 		$output .= '</select>';
-		$output .= '<input type="hidden" value="' . implode(',', $selectedUids) . '" name="' . $name . '" />';
 		// remove suggest wizard now, because we don't need it anymore
 		unset($config['fieldConf']['config']['wizards']['suggest']);
 		if ( !$disabled ) {

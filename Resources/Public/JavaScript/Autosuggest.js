@@ -13,11 +13,12 @@
 
 requirejs.config({
     "paths": {
-	  "selectize": "../typo3conf/ext/kd_tca_autosuggest/Resources/Public/JavaScript/Libraries/selectize.js/selectize"
+		"jqueryui": "../typo3conf/ext/kd_tca_autosuggest/Resources/Public/JavaScript/Libraries/jquery-ui/jquery-ui",
+		"selectize": "../typo3conf/ext/kd_tca_autosuggest/Resources/Public/JavaScript/Libraries/selectize.js/selectize"
     }
 });
 define([
-		'jquery', 'selectize'
+		'jquery', 'jqueryui', 'selectize'
 	], function($){
 		$(function(){
 			$('.selectize').selectize({
@@ -26,6 +27,7 @@ define([
 				labelField: 'label',
 				valueField: 'uid',
 				sortField: 'label',
+				plugins: ['drag_drop'],
 				render: {
 					option: function(item, escape){
 						// entity decode
@@ -39,11 +41,14 @@ define([
 					}
 				},
 				onChange: function(value){
-					var $hidden = this.$input.parent().find('input[name="' + this.$input.attr('name') + '"]');
+					var name = this.$input.data('formengine-input-name'),
+						$hidden = this.$input.parent().find('input[name="' + name + '"]');
 					if(value !== null && typeof value === "object"){
 						$hidden.val(value.join());
 					}else if(typeof value === "String"){
 						$hidden.val(value);
+					}else if(value === null){
+						$hidden.val('');
 					}
 				},
 				onItemAdd: function(value, $item){
