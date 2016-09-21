@@ -68,7 +68,7 @@ class AutosuggestElement extends AbstractFormElement {
 		if ( count($selectedUids) > 0 ) {
 			$optionRows = $this->getDatabase()->exec_SELECTgetRows(
 				'`' . $foreignTable . '`.`uid`, `' . $foreignTable . '`.`' . $tableConfig['label'] . '` AS "label"', $foreignTable,
-				'`' . $foreignTable . '`.`uid` IN(' . implode(',', $selectedUids) . ')'
+				'`' . $foreignTable . '`.`uid` IN(' . implode(',', $selectedUids) . ')', '', 'FIELD(uid,' . implode(',', $selectedUids) . ')'
 			);
 			if ( is_array($optionRows) ) {
 				$iconFactory = GeneralUtility::makeInstance(IconFactory::class);
