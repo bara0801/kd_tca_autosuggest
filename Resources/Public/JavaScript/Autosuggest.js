@@ -43,12 +43,8 @@ define([
 				onChange: function(value){
 					var name = this.$input.data('formengine-input-name'),
 						$hidden = this.$input.parent().find('input[name="' + name + '"]');
-					if(value !== null && typeof value === "object"){
+					if(value !== '' && value !== []){
 						$hidden.val(value.join());
-					}else if(typeof value === "String"){
-						$hidden.val(value);
-					}else if(value === null){
-						$hidden.val('');
 					}
 				},
 				onItemAdd: function(value, $item){
@@ -57,6 +53,38 @@ define([
 						event.preventDefault();
 						selectizeObject.$input.find('option[value="' + value + '"]').trigger('focus');
 					});
+					var name = this.$input.data('formengine-input-name'),
+						$hidden = this.$input.parent().find('input[name="' + name + '"]');
+					if($hidden.val() !== ''){
+						var hiddenValues = $hidden.val().split(',');
+						if(typeof hiddenValues === "object"){
+							hiddenValues.push(value);
+						}else{
+							hiddenValues = [value]
+						}
+						$hidden.val(hiddenValues.join());
+					}else{
+						$hidden.val(value);
+					}
+				},
+				onItemRemove: function(value){
+					var name = this.$input.data('formengine-input-name'),
+						$hidden = this.$input.parent().find('input[name="' + name + '"]');
+					if($hidden.val() !== ''){
+						var hiddenValues = $hidden.val().split(',');
+						if(typeof hiddenValues === "object"){
+							var indexOfValue = hiddenValues.indexOf(value),
+								newValues = [];
+							if(indexOfValue >= 0){
+								$.each(hiddenValues,function(index){
+									if(index !== indexOfValue){
+										newValues.push(hiddenValues[index]);
+									}
+								});
+								$hidden.val(newValues.join());
+							}
+						}
+					}
 				},
 				load: function (query, callback){
 					if (!query.length) return callback();

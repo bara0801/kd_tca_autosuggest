@@ -92,13 +92,11 @@ class AutosuggestElement extends AbstractFormElement {
 		}
 		$multiple = '';
 		$name = $config['itemFormElName'];
-		$selectName = $config['itemFormElName'];
 		if (
 			$config['fieldConf']['config']['MM'] ||
 			$config['fieldConf']['config']['maxitems'] > 1
 		) {
 			$multiple = 'multiple="multiple" ';
-			$selectName .= '[]';
 		}
 
 		$output = '<input type="hidden" value="' . implode(',', $selectedUids) . '" name="' . $name . '" data-formengine-input-name="' . htmlspecialchars($name) . '" />'
@@ -111,7 +109,6 @@ class AutosuggestElement extends AbstractFormElement {
 			. 'data-pid="' . (int) $row['pid'] . '" '
 			. 'data-recorddata="' . htmlspecialchars($jsRow) . '" '
 			. 'class="selectize" '
-			. 'name="' . $selectName . '" '
 			. $multiple
 			. '>';
 		$output .= implode(LF, $opt);
