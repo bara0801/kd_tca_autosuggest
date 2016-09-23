@@ -43,7 +43,7 @@ define([
 				onChange: function(value){
 					var name = this.$input.data('formengine-input-name'),
 						$hidden = this.$input.parent().find('input[name="' + name + '"]');
-					if(value !== '' && value !== []){
+					if(value !== '' && value !== [] && value !== null){
 						$hidden.val(value.join());
 					}
 				},
