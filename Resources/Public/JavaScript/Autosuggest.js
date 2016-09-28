@@ -21,7 +21,10 @@ define([
 		'jquery', 'jqueryui', 'selectize'
 	], function($){
 		$(function(){
-			$('.selectize').selectize({
+			$('body').on('initializeSelectize','.selectize',function(event){
+				var $selectize = $(event.target);
+				if(!$selectize[0].selectize){
+					$selectize.selectize({
 				create: false,
 				searchField: 'label',
 				labelField: 'label',
@@ -115,6 +118,38 @@ define([
 					});
 				}
 			});
+				}
+		});
+
+			if(typeof MutationObserver === 'function'){
+				var selectizeObserver = new MutationObserver(function(mutations){
+					var mutationsLength = mutations.length;
+					for(var i = 0; i < mutationsLength; i++){
+						var added = mutations[i].addedNodes,
+							addedLength = added.length;
+						for(var j = 0; j < addedLength; j++){
+							var $node = $(added[j]);
+							if(	$node.hasClass('panel') || $node.attr('role') === 'tabpanel' ){
+								var $selectizeElements = $node.find('.selectize');
+								if($selectizeElements.length > 0){
+									$selectizeElements.trigger('initializeSelectize');
+	}
+							}
+						}
+					}
+				});
+				$('.form-group > .panel-group').each(function() {
+					selectizeObserver.observe(this, {
+						childList: true,
+						subtree: true
+					});
+				});
+			}else{
+				// no modern browser used, should we implement a fallback solution? (e.g. with setTimeout)
+			}
+
+			// trigger the initialization for the current form
+			$('.selectize').trigger('initializeSelectize');
 		});
 	}
 );
